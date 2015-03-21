@@ -1,11 +1,37 @@
 # cocoapods-rome
 
-A description of cocoapods-rome.
+Rome makes it easy to build a list of frameworks for consumption outside of
+Xcode, e.g. for a Swift script.
 
 ## Installation
 
-    $ gem install cocoapods-rome
+```bash
+$ gem install cocoapods-rome
+```
 
 ## Usage
 
-    $ pod spec rome POD_NAME
+Write a simple Podfile like this:
+
+```ruby
+platform :osx, '10.10'
+use_frameworks!
+
+plugin 'cocoapods-rome'
+
+pod 'Alamofire'
+```
+
+then run this:
+
+```bash
+pod install --no-integrate --no-repo-update
+```
+
+and you will end up with dynamic frameworks:
+
+```
+$ tree Rome/
+Rome/
+└── Alamofire.framework
+```

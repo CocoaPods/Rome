@@ -1,1 +1,1 @@
-require 'cocoapods-rome/command.rb'
+require 'cocoapods-rome/post_install.rb'
