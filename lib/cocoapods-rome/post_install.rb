@@ -26,7 +26,7 @@ Pod::HooksManager.register('cocoapods-rome', :post_install) do |installer_contex
   destination.rmtree if destination.directory?
   frameworks_by_target.each do |dest, frameworks|
     FileUtils.mkdir_p dest
-    FileUtils.mv frameworks, dest
+    FileUtils.cp_r frameworks, dest, :remove_destination => true
   end
-  build_dir.rmtree
+  build_dir.rmtree if build_dir.directory?
 end
