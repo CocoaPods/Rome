@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.version       = CocoapodsRome::VERSION
   spec.authors       = ["Boris Bügling"]
   spec.email         = ["boris@icculus.org"]
-  spec.description   = %q{Rome makes it easy to build a list of frameworks for consumption outside of
+  spec.summary       = %q{Rome makes it easy to build a list of frameworks for consumption outside of
 Xcode}
   spec.homepage      = "https://github.com/neonichu/Rome"
   spec.license       = "MIT"
