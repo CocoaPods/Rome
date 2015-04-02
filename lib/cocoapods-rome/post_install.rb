@@ -11,7 +11,7 @@ Pod::HooksManager.register('cocoapods-rome', :post_install) do |installer_contex
   Dir.chdir(sandbox.project_path.dirname) do
     targets = installer_context.umbrella_targets.select { |t| t.specs.any? }.map(&:cocoapods_target_label)
     targets.each do |target|
-      Pod::Executable.execute_command 'xcodebuild', %(-project #{sandbox.project_path.basename} -scheme #{target} -configuration Release), true
+      Pod::Executable.execute_command 'xcodebuild', %W(-project #{sandbox.project_path.basename} -scheme #{target} -configuration Release), true
     end
   end
 
