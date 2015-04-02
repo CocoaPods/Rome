@@ -17,8 +17,6 @@ Write a simple Podfile like this:
 
 ```ruby
 platform :osx, '10.10'
-use_frameworks!
-
 plugin 'cocoapods-rome'
 
 pod 'Alamofire'
@@ -27,7 +25,7 @@ pod 'Alamofire'
 then run this:
 
 ```bash
-pod install --no-integrate --no-repo-update
+pod install
 ```
 
 and you will end up with dynamic frameworks:
