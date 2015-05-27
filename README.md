@@ -27,7 +27,7 @@ pod 'Alamofire'
 then run this:
 
 ```bash
-pod install --no-integrate --no-repo-update
+pod install --no-integrate
 ```
 
 and you will end up with dynamic frameworks:
