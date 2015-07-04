@@ -1,3 +1,7 @@
+def xcodebuild(sandbox, target, sdk='macosx')
+  Pod::Executable.execute_command 'xcodebuild', %W(-project #{sandbox.project_path.basename} -scheme #{target} -configuration Release -sdk #{sdk}), true
+end
+
 Pod::HooksManager.register('cocoapods-rome', :post_install) do |installer_context|
   sandbox_root = Pathname(installer_context.sandbox_root)
   sandbox = Pod::Sandbox.new(sandbox_root)
@@ -9,9 +13,23 @@ Pod::HooksManager.register('cocoapods-rome', :post_install) do |installer_contex
 
   build_dir.rmtree if build_dir.directory?
   Dir.chdir(sandbox.project_path.dirname) do
-    targets = installer_context.umbrella_targets.select { |t| t.specs.any? }.map(&:cocoapods_target_label)
+    targets = installer_context.umbrella_targets.select { |t| t.specs.any? }
     targets.each do |target|
-      Pod::Executable.execute_command 'xcodebuild', %W(-project #{sandbox.project_path.basename} -scheme #{target} -configuration Release), true
+      if target.platform_name == :ios
+        xcodebuild(sandbox, target.cocoapods_target_label, 'iphoneos')
+        xcodebuild(sandbox, target.cocoapods_target_label, 'iphonesimulator')
+
+        target.specs.each do |spec|
+          device_lib = "#{build_dir}/Release-iphoneos/#{spec.name}.framework/#{spec.name}"
+          simulator_lib = "#{build_dir}/Release-iphonesimulator/#{spec.name}.framework/#{spec.name}"
+          `lipo -create -output "#{build_dir}/#{spec.name}" #{device_lib} #{simulator_lib}`
+
+          FileUtils.mv "#{build_dir}/#{spec.name}", device_lib
+          Pathname.new("#{build_dir}/Release-iphonesimulator/#{spec.name}.framework").rmtree
+        end
+      else
+        xcodebuild(sandbox, target.cocoapods_target_label)
+      end
     end
   end
 
