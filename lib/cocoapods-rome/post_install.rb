@@ -17,16 +17,15 @@ Pod::HooksManager.register('cocoapods-rome', :post_install) do |installer_contex
 
   raise Pod::Informative, 'The build directory was not found in the expected location.' unless build_dir.directory?
 
-  frameworks = Pathname.glob(build_dir + 'Release*/Pods*/*.framework')
-  frameworks_by_target = frameworks.group_by { |f| f.to_s =~ %r{build/Release[^/]*/Pods-?([^/]*)/} && destination + $1 }
+  frameworks = Pathname.glob(build_dir + 'Release*/*.framework').reject { |f| f.to_s =~ /Pods*\.framework/ }
 
   Pod::UI.puts "Built #{frameworks.count} #{'frameworks'.pluralize(frameworks.count)}"
   Pod::UI.puts "Copying frameworks to `#{destination.relative_path_from Pathname.pwd}`"
 
   destination.rmtree if destination.directory?
-  frameworks_by_target.each do |dest, frameworks|
-    FileUtils.mkdir_p dest
-    FileUtils.cp_r frameworks, dest, :remove_destination => true
+  frameworks.each do |framework|
+    FileUtils.mkdir_p destination
+    FileUtils.cp_r framework, destination, :remove_destination => true
   end
   build_dir.rmtree if build_dir.directory?
 end
