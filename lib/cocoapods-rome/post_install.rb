@@ -24,7 +24,7 @@ Pod::HooksManager.register('cocoapods-rome', :post_install) do |installer_contex
         xcodebuild(sandbox, target_label, DEVICE)
         xcodebuild(sandbox, target_label, SIMULATOR)
 
-        spec_names = target.specs.map { |spec| Pod::Specification.root_name(spec.name) }
+        spec_names = target.specs.map { |spec| spec.root.name }
         spec_names.uniq.each do |root_name|
           executable_path = "#{build_dir}/#{root_name}"
           device_lib = "#{build_dir}/#{CONFIGURATION}-#{DEVICE}/#{target_label}/#{root_name}.framework/#{root_name}"
