@@ -20,12 +20,13 @@ Pod::HooksManager.register('cocoapods-rome', :post_install) do |installer_contex
         xcodebuild(sandbox, target.cocoapods_target_label, 'iphonesimulator')
 
         target.specs.each do |spec|
-          device_lib = "#{build_dir}/Release-iphoneos/#{spec.name}.framework/#{spec.name}"
-          simulator_lib = "#{build_dir}/Release-iphonesimulator/#{spec.name}.framework/#{spec.name}"
-          `lipo -create -output "#{build_dir}/#{spec.name}" #{device_lib} #{simulator_lib}`
+          name = spec.root.name
+          device_lib = "#{build_dir}/Release-iphoneos/#{name}.framework/#{name}"
+          simulator_lib = "#{build_dir}/Release-iphonesimulator/#{name}.framework/#{name}"
+          `lipo -create -output "#{build_dir}/#{name}" #{device_lib} #{simulator_lib}`
 
-          FileUtils.mv "#{build_dir}/#{spec.name}", device_lib
-          Pathname.new("#{build_dir}/Release-iphonesimulator/#{spec.name}.framework").rmtree
+          FileUtils.mv "#{build_dir}/#{name}", device_lib
+          Pathname.new("#{build_dir}/Release-iphonesimulator/#{name}.framework").rmtree
         end
       else
         xcodebuild(sandbox, target.cocoapods_target_label)
