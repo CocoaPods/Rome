@@ -1,5 +1,9 @@
+CONFIGURATION = "Release"
+DEVICE = "iphoneos"
+SIMULATOR = "iphonesimulator"
+
 def xcodebuild(sandbox, target, sdk='macosx')
-  Pod::Executable.execute_command 'xcodebuild', %W(-project #{sandbox.project_path.basename} -scheme #{target} -configuration Release -sdk #{sdk}), true
+  Pod::Executable.execute_command 'xcodebuild', %W(-project #{sandbox.project_path.basename} -scheme #{target} -configuration #{CONFIGURATION} -sdk #{sdk}), true
 end
 
 Pod::HooksManager.register('cocoapods-rome', :post_install) do |installer_context|
@@ -15,27 +19,34 @@ Pod::HooksManager.register('cocoapods-rome', :post_install) do |installer_contex
   Dir.chdir(sandbox.project_path.dirname) do
     targets = installer_context.umbrella_targets.select { |t| t.specs.any? }
     targets.each do |target|
+      target_label = target.cocoapods_target_label
       if target.platform_name == :ios
-        xcodebuild(sandbox, target.cocoapods_target_label, 'iphoneos')
-        xcodebuild(sandbox, target.cocoapods_target_label, 'iphonesimulator')
+        xcodebuild(sandbox, target_label, DEVICE)
+        xcodebuild(sandbox, target_label, SIMULATOR)
 
-        target.specs.each do |spec|
-          device_lib = "#{build_dir}/Release-iphoneos/#{spec.name}.framework/#{spec.name}"
-          simulator_lib = "#{build_dir}/Release-iphonesimulator/#{spec.name}.framework/#{spec.name}"
-          `lipo -create -output "#{build_dir}/#{spec.name}" #{device_lib} #{simulator_lib}`
+        spec_names = target.specs.map { |spec| Pod::Specification.root_name(spec.name) }
+        spec_names.uniq.each do |root_name|
+          executable_path = "#{build_dir}/#{root_name}"
+          device_lib = "#{build_dir}/#{CONFIGURATION}-#{DEVICE}/#{target_label}/#{root_name}.framework/#{root_name}"
+          device_framework_lib = File.dirname(device_lib)
+          simulator_lib = "#{build_dir}/#{CONFIGURATION}-#{SIMULATOR}/#{target_label}/#{root_name}.framework/#{root_name}"
 
-          FileUtils.mv "#{build_dir}/#{spec.name}", device_lib
-          Pathname.new("#{build_dir}/Release-iphonesimulator/#{spec.name}.framework").rmtree
+          `lipo -create -output #{executable_path} #{device_lib} #{simulator_lib}`
+
+          FileUtils.mv executable_path, device_lib
+          FileUtils.mv device_framework_lib, build_dir
         end
       else
-        xcodebuild(sandbox, target.cocoapods_target_label)
+        xcodebuild(sandbox, target_label)
       end
     end
   end
 
+  exit 1
+
   raise Pod::Informative, 'The build directory was not found in the expected location.' unless build_dir.directory?
 
-  frameworks = Pathname.glob(build_dir + 'Release*/*.framework').reject { |f| f.to_s =~ /Pods*\.framework/ }
+  frameworks = Pathname.glob("#{build_dir}/*.framework").reject { |f| f.to_s =~ /Pods*\.framework/ }
 
   Pod::UI.puts "Built #{frameworks.count} #{'frameworks'.pluralize(frameworks.count)}"
   Pod::UI.puts "Copying frameworks to `#{destination.relative_path_from Pathname.pwd}`"
