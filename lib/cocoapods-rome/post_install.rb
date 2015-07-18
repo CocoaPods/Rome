@@ -24,12 +24,14 @@ Pod::HooksManager.register('cocoapods-rome', :post_install) do |installer_contex
         xcodebuild(sandbox, target_label, DEVICE)
         xcodebuild(sandbox, target_label, SIMULATOR)
 
-        spec_names = target.specs.map { |spec| spec.root.name }
-        spec_names.uniq.each do |root_name|
+        spec_names = target.specs.map { |spec| spec.root.name }.uniq
+        spec_names.each do |root_name|
           executable_path = "#{build_dir}/#{root_name}"
           device_lib = "#{build_dir}/#{CONFIGURATION}-#{DEVICE}/#{target_label}/#{root_name}.framework/#{root_name}"
           device_framework_lib = File.dirname(device_lib)
           simulator_lib = "#{build_dir}/#{CONFIGURATION}-#{SIMULATOR}/#{target_label}/#{root_name}.framework/#{root_name}"
+
+          next unless File.file?(device_lib) && File.file?(simulator_lib)
 
           `lipo -create -output #{executable_path} #{device_lib} #{simulator_lib}`
 
@@ -59,6 +61,7 @@ Pod::HooksManager.register('cocoapods-rome', :post_install) do |installer_contex
       frameworks += file_accessor.vendored_frameworks
     end
   end
+  frameworks.uniq!
 
   frameworks.each do |framework|
     FileUtils.mkdir_p destination
