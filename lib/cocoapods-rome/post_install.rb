@@ -46,7 +46,7 @@ Pod::HooksManager.register('cocoapods-rome', :post_install) do |installer_contex
 
   raise Pod::Informative, 'The build directory was not found in the expected location.' unless build_dir.directory?
 
-  frameworks = Pathname.glob("#{build_dir}/*.framework").reject { |f| f.to_s =~ /Pods*\.framework/ }
+  frameworks = Pathname.glob("#{build_dir}/**/*.framework").reject { |f| f.to_s =~ /Pods*\.framework/ }
 
   Pod::UI.puts "Built #{frameworks.count} #{'frameworks'.pluralize(frameworks.count)}"
 
