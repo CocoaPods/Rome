@@ -1,8 +1,8 @@
 PATH
   remote: .
   specs:
-    cocoapods-rome (0.1.0)
-      cocoapods (>= 0.38.0.beta2)
+    cocoapods-rome (0.2.0)
+      cocoapods (>= 0.38.0)
 
 GEM
   remote: https://rubygems.org/
@@ -15,10 +15,10 @@ GEM
       tzinfo (~> 1.1)
     bacon (1.2.0)
     claide (0.9.1)
-    cocoapods (0.38.0.beta.2)
+    cocoapods (0.38.0)
       activesupport (>= 3.2.15)
       claide (~> 0.9.1)
-      cocoapods-core (= 0.38.0.beta.2)
+      cocoapods-core (= 0.38.0)
       cocoapods-downloader (~> 0.9.1)
       cocoapods-plugins (~> 0.4.2)
       cocoapods-stats (~> 0.5.3)
@@ -28,8 +28,8 @@ GEM
       escape (~> 0.0.4)
       molinillo (~> 0.3.0)
       nap (~> 0.8)
-      xcodeproj (~> 0.26.1)
-    cocoapods-core (0.38.0.beta.2)
+      xcodeproj (~> 0.26.2)
+    cocoapods-core (0.38.0)
       activesupport (>= 3.2.15)
       fuzzy_match (~> 2.0.4)
       nap (~> 0.8.0)
@@ -55,7 +55,7 @@ GEM
     thread_safe (0.3.5)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
-    xcodeproj (0.26.1)
+    xcodeproj (0.26.2)
       activesupport (>= 3)
       claide (~> 0.9.1)
       colored (~> 1.2)
