@@ -33,7 +33,8 @@ Pod::HooksManager.register('cocoapods-rome', :post_install) do |installer_contex
 
           next unless File.file?(device_lib) && File.file?(simulator_lib)
 
-          `lipo -create -output #{executable_path} #{device_lib} #{simulator_lib}`
+          lipo_log = `lipo -create -output #{executable_path} #{device_lib} #{simulator_lib}`
+          puts lipo_log unless File.exist?(executable_path)
 
           FileUtils.mv executable_path, device_lib
           FileUtils.mv device_framework_lib, build_dir
