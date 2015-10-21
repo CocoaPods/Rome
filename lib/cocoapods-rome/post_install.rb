@@ -38,6 +38,8 @@ Pod::HooksManager.register('cocoapods-rome', :post_install) do |installer_contex
 
           FileUtils.mv executable_path, device_lib
           FileUtils.mv device_framework_lib, build_dir
+          FileUtils.rm simulator_lib if File.file?(simulator_lib)
+          FileUtils.rm device_lib if File.file?(device_lib)
         end
       else
         xcodebuild(sandbox, target_label)
