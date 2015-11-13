@@ -6,7 +6,7 @@ TV_DEVICE = "appletvos"
 TV_SIMULATOR = "appletvsimulator"
 
 def xcodebuild(sandbox, target, sdk='macosx')
-  Pod::Executable.execute_command 'xcodebuild', %W(-project #{sandbox.project_path.basename} -scheme #{target} -configuration #{CONFIGURATION} -sdk #{sdk}), true
+  Pod::Executable.execute_command 'xcodebuild', %W(-project #{sandbox.project_path.basename} -scheme #{target} -configuration #{CONFIGURATION} -sdk #{sdk} OTHER_CFLAGS="-fembed-bitcode"), true
 end
 
 Pod::HooksManager.register('cocoapods-rome', :post_install) do |installer_context|
