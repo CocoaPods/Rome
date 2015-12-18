@@ -3,6 +3,7 @@ PATH
   specs:
     cocoapods-rome (0.3.0)
       cocoapods (>= 0.38.0)
+      fourflusher (~> 0.1.0)
 
 GEM
   remote: https://rubygems.org/
@@ -45,6 +46,7 @@ GEM
     cocoapods-try (0.5.1)
     colored (1.2)
     escape (0.0.4)
+    fourflusher (0.1.0)
     fuzzy_match (2.0.4)
     i18n (0.7.0)
     json (1.8.3)
@@ -72,4 +74,4 @@ DEPENDENCIES
   rake
 
 BUNDLED WITH
-   1.10.6
+   1.11.0

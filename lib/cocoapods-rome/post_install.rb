@@ -1,9 +1,13 @@
+require 'fourflusher'
+
 CONFIGURATION = "Release"
 DEVICE = "iphoneos"
 SIMULATOR = "iphonesimulator"
 
 def xcodebuild(sandbox, target, sdk='macosx')
-  Pod::Executable.execute_command 'xcodebuild', %W(-project #{sandbox.project_path.basename} -scheme #{target} -configuration #{CONFIGURATION} -sdk #{sdk}), true
+  args = %W(-project #{sandbox.project_path.basename} -scheme #{target} -configuration #{CONFIGURATION} -sdk #{sdk})
+  args += SimControl.new.destination('iPhone 5s') if sdk != 'macosx'
+  Pod::Executable.execute_command 'xcodebuild', args, true
 end
 
 Pod::HooksManager.register('cocoapods-rome', :post_install) do |installer_context|
