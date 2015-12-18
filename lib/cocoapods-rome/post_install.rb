@@ -6,7 +6,7 @@ SIMULATOR = "iphonesimulator"
 
 def xcodebuild(sandbox, target, sdk='macosx')
   args = %W(-project #{sandbox.project_path.basename} -scheme #{target} -configuration #{CONFIGURATION} -sdk #{sdk})
-  args += SimControl.new.destination('iPhone 5s') if sdk != 'macosx'
+  args += Fourflusher::SimControl.new.destination('iPhone 5s') if sdk.include?('simulator')
   Pod::Executable.execute_command 'xcodebuild', args, true
 end
 
