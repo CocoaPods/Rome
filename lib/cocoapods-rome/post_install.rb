@@ -1,12 +1,39 @@
 require 'fourflusher'
 
 CONFIGURATION = "Release"
-DEVICE = "iphoneos"
-SIMULATOR = "iphonesimulator"
+SIMULATORS = { 'iphonesimulator' => 'iPhone 5s',
+               'appletvsimulator' => 'Apple TV 1080p',
+               'watchsimulator' => 'Apple Watch - 38mm' }
+
+def build_for_iosish_platform(sandbox, build_dir, target, device, simulator)
+  target_label = target.cocoapods_target_label
+
+  xcodebuild(sandbox, target_label, device)
+  xcodebuild(sandbox, target_label, simulator)
+
+  spec_names = target.specs.map { |spec| spec.root.module_name }.uniq
+  spec_names.each do |root_name|
+    executable_path = "#{build_dir}/#{root_name}"
+    device_lib = "#{build_dir}/#{CONFIGURATION}-#{device}/#{target_label}/#{root_name}.framework/#{root_name}"
+    device_framework_lib = File.dirname(device_lib)
+    simulator_lib = "#{build_dir}/#{CONFIGURATION}-#{simulator}/#{target_label}/#{root_name}.framework/#{root_name}"
+
+    next unless File.file?(device_lib) && File.file?(simulator_lib)
+
+    lipo_log = `lipo -create -output #{executable_path} #{device_lib} #{simulator_lib}`
+    puts lipo_log unless File.exist?(executable_path)
+
+    FileUtils.mv executable_path, device_lib
+    FileUtils.mv device_framework_lib, build_dir
+    FileUtils.rm simulator_lib if File.file?(simulator_lib)
+    FileUtils.rm device_lib if File.file?(device_lib)
+  end
+end
 
 def xcodebuild(sandbox, target, sdk='macosx')
   args = %W(-project #{sandbox.project_path.basename} -scheme #{target} -configuration #{CONFIGURATION} -sdk #{sdk})
-  args += Fourflusher::SimControl.new.destination('iPhone 5s') if sdk.include?('simulator')
+  simulator = SIMULATORS[sdk]
+  args += Fourflusher::SimControl.new.destination(simulator) unless simulator.nil?
   Pod::Executable.execute_command 'xcodebuild', args, true
 end
 
@@ -23,31 +50,12 @@ Pod::HooksManager.register('cocoapods-rome', :post_install) do |installer_contex
   Dir.chdir(sandbox.project_path.dirname) do
     targets = installer_context.umbrella_targets.select { |t| t.specs.any? }
     targets.each do |target|
-      target_label = target.cocoapods_target_label
-      if target.platform_name == :ios
-        xcodebuild(sandbox, target_label, DEVICE)
-        xcodebuild(sandbox, target_label, SIMULATOR)
-
-        spec_names = target.specs.map { |spec| spec.root.module_name }.uniq
-        spec_names.each do |root_name|
-          executable_path = "#{build_dir}/#{root_name}"
-          device_lib = "#{build_dir}/#{CONFIGURATION}-#{DEVICE}/#{target_label}/#{root_name}.framework/#{root_name}"
-          device_framework_lib = File.dirname(device_lib)
-          simulator_lib = "#{build_dir}/#{CONFIGURATION}-#{SIMULATOR}/#{target_label}/#{root_name}.framework/#{root_name}"
-
-          next unless File.file?(device_lib) && File.file?(simulator_lib)
-
-          lipo_log = `lipo -create -output #{executable_path} #{device_lib} #{simulator_lib}`
-          puts lipo_log unless File.exist?(executable_path)
-
-          FileUtils.mv executable_path, device_lib
-          FileUtils.mv device_framework_lib, build_dir
-          FileUtils.rm simulator_lib if File.file?(simulator_lib)
-          FileUtils.rm device_lib if File.file?(device_lib)
-        end
-      else
-        xcodebuild(sandbox, target_label)
-      end
+      case target.platform_name
+      when :ios then build_for_iosish_platform(sandbox, build_dir, target, 'iphoneos', 'iphonesimulator')
+      when :osx then xcodebuild(sandbox, target.cocoapods_target_label)
+      when :tvos then build_for_iosish_platform(sandbox, build_dir, target, 'appletvos', 'appletvsimulator')
+      when :watchos then build_for_iosish_platform(sandbox, build_dir, target, 'watchos', 'watchsimulator')
+      else raise "Unknown platform '#{target.platform_name}'" end
     end
   end
 
