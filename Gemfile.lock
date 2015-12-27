@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    cocoapods-rome (0.3.0)
+    cocoapods-rome (0.4.0)
       cocoapods (>= 0.38.0)
       fourflusher (~> 0.1.0)
 
