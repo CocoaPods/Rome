@@ -1,14 +1,14 @@
 PATH
   remote: .
   specs:
-    cocoapods-rome (0.4.0)
+    cocoapods-rome (0.4.1)
       cocoapods (>= 0.38.0)
-      fourflusher (~> 0.1.0)
+      fourflusher (~> 0.3.0)
 
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (4.2.4)
+    activesupport (4.2.5)
       i18n (~> 0.7)
       json (~> 1.7, >= 1.7.7)
       minitest (~> 5.1)
@@ -46,12 +46,12 @@ GEM
     cocoapods-try (0.5.1)
     colored (1.2)
     escape (0.0.4)
-    fourflusher (0.1.0)
+    fourflusher (0.3.0)
     fuzzy_match (2.0.4)
     i18n (0.7.0)
     json (1.8.3)
-    minitest (5.8.1)
-    molinillo (0.4.0)
+    minitest (5.8.3)
+    molinillo (0.4.1)
     nap (1.0.0)
     netrc (0.7.8)
     rake (10.4.2)

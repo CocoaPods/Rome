@@ -19,7 +19,7 @@ Xcode}
   spec.require_paths = ["lib"]
 
   spec.add_dependency "cocoapods", ">= 0.38.0"
-  spec.add_dependency "fourflusher", "~> 0.1.0"
+  spec.add_dependency "fourflusher", "~> 0.3.0"
 
   spec.add_development_dependency "bundler", "~> 1.3"
   spec.add_development_dependency "rake"
