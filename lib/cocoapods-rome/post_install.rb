@@ -6,10 +6,11 @@ SIMULATORS = { 'iphonesimulator' => 'iPhone 5s',
                'watchsimulator' => 'Apple Watch - 38mm' }
 
 def build_for_iosish_platform(sandbox, build_dir, target, device, simulator)
+  deployment_target = target.platform_deployment_target
   target_label = target.cocoapods_target_label
 
-  xcodebuild(sandbox, target_label, device)
-  xcodebuild(sandbox, target_label, simulator)
+  xcodebuild(sandbox, target_label, device, deployment_target)
+  xcodebuild(sandbox, target_label, simulator, deployment_target)
 
   spec_names = target.specs.map { |spec| spec.root.module_name }.uniq
   spec_names.each do |root_name|
@@ -30,10 +31,10 @@ def build_for_iosish_platform(sandbox, build_dir, target, device, simulator)
   end
 end
 
-def xcodebuild(sandbox, target, sdk='macosx')
+def xcodebuild(sandbox, target, sdk='macosx', deployment_target=nil)
   args = %W(-project #{sandbox.project_path.basename} -scheme #{target} -configuration #{CONFIGURATION} -sdk #{sdk})
   simulator = SIMULATORS[sdk]
-  args += Fourflusher::SimControl.new.destination(simulator) unless simulator.nil?
+  args += Fourflusher::SimControl.new.destination(simulator, deployment_target) unless simulator.nil?
   Pod::Executable.execute_command 'xcodebuild', args, true
 end
 
