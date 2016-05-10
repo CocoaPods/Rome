@@ -18,7 +18,7 @@ Xcode}
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "cocoapods", ">= 0.38.0"
+  spec.add_dependency "cocoapods", ">= 1.0.0"
   spec.add_dependency "fourflusher", "~> 0.3.0"
 
   spec.add_development_dependency "bundler", "~> 1.3"
