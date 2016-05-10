@@ -1,5 +1,6 @@
 Pod::HooksManager.register('cocoapods-rome', :pre_install) do |installer_context|
-  installer_context.podfile.use_frameworks!
-  Pod::Config.instance.integrate_targets = false
-  Pod::Config.instance.deduplicate_targets = false
+  podfile = installer_context.podfile
+  podfile.use_frameworks!
+  podfile.install!('cocoapods',
+    podfile.installation_method.last.merge(:integrate_targets => false))
 end

@@ -20,7 +20,9 @@ platform :osx, '10.10'
 
 plugin 'cocoapods-rome'
 
-pod 'Alamofire'
+target 'caesar' do
+  pod 'Alamofire'
+end
 ```
 
 then run this:
