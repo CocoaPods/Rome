@@ -4,7 +4,6 @@ source 'https://rubygems.org'
 gemspec
 
 group :development do
-  gem 'cocoapods', '>= 0.38'
   gem 'bacon'
 end
 
