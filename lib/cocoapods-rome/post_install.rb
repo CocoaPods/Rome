@@ -12,12 +12,12 @@ def build_for_iosish_platform(sandbox, build_dir, target, device, simulator)
   xcodebuild(sandbox, target_label, device, deployment_target)
   xcodebuild(sandbox, target_label, simulator, deployment_target)
 
-  spec_names = target.specs.map { |spec| spec.root.module_name }.uniq
-  spec_names.each do |root_name|
+  spec_names = target.specs.map { |spec| [spec.root.name, spec.root.module_name] }.uniq
+  spec_names.each do |root_name, module_name|
     executable_path = "#{build_dir}/#{root_name}"
-    device_lib = "#{build_dir}/#{CONFIGURATION}-#{device}/#{root_name}/#{root_name}.framework/#{root_name}"
+    device_lib = "#{build_dir}/#{CONFIGURATION}-#{device}/#{root_name}/#{module_name}.framework/#{module_name}"
     device_framework_lib = File.dirname(device_lib)
-    simulator_lib = "#{build_dir}/#{CONFIGURATION}-#{simulator}/#{root_name}/#{root_name}.framework/#{root_name}"
+    simulator_lib = "#{build_dir}/#{CONFIGURATION}-#{simulator}/#{root_name}/#{module_name}.framework/#{module_name}"
 
     next unless File.file?(device_lib) && File.file?(simulator_lib)
 
