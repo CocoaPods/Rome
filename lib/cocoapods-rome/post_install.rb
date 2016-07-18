@@ -1,9 +1,9 @@
 require 'fourflusher'
 
 CONFIGURATION = "Release"
-SIMULATORS = { 'iphonesimulator' => 'iPhone 5s',
-               'appletvsimulator' => 'Apple TV 1080p',
-               'watchsimulator' => 'Apple Watch - 38mm' }
+PLATFORMS = { 'iphonesimulator' => 'iOS',
+              'appletvsimulator' => 'tvOS',
+              'watchsimulator' => 'watchOS' }
 
 def build_for_iosish_platform(sandbox, build_dir, target, device, simulator)
   deployment_target = target.platform_deployment_target
@@ -15,9 +15,9 @@ def build_for_iosish_platform(sandbox, build_dir, target, device, simulator)
   spec_names = target.specs.map { |spec| spec.root.module_name }.uniq
   spec_names.each do |root_name|
     executable_path = "#{build_dir}/#{root_name}"
-    device_lib = "#{build_dir}/#{CONFIGURATION}-#{device}/#{target_label}/#{root_name}.framework/#{root_name}"
+    device_lib = "#{build_dir}/#{CONFIGURATION}-#{device}/#{root_name}/#{root_name}.framework/#{root_name}"
     device_framework_lib = File.dirname(device_lib)
-    simulator_lib = "#{build_dir}/#{CONFIGURATION}-#{simulator}/#{target_label}/#{root_name}.framework/#{root_name}"
+    simulator_lib = "#{build_dir}/#{CONFIGURATION}-#{simulator}/#{root_name}/#{root_name}.framework/#{root_name}"
 
     next unless File.file?(device_lib) && File.file?(simulator_lib)
 
@@ -33,8 +33,8 @@ end
 
 def xcodebuild(sandbox, target, sdk='macosx', deployment_target=nil)
   args = %W(-project #{sandbox.project_path.basename} -scheme #{target} -configuration #{CONFIGURATION} -sdk #{sdk})
-  simulator = SIMULATORS[sdk]
-  args += Fourflusher::SimControl.new.destination(simulator, deployment_target) unless simulator.nil?
+  platform = PLATFORMS[sdk]
+  args += Fourflusher::SimControl.new.destination(:oldest, platform, deployment_target) unless platform.nil?
   Pod::Executable.execute_command 'xcodebuild', args, true
 end
 
@@ -62,7 +62,7 @@ Pod::HooksManager.register('cocoapods-rome', :post_install) do |installer_contex
 
   raise Pod::Informative, 'The build directory was not found in the expected location.' unless build_dir.directory?
 
-  frameworks = Pathname.glob("#{build_dir}/**/*.framework").reject { |f| f.to_s =~ /Pods*\.framework/ }
+  frameworks = Pathname.glob("#{build_dir}/**/*.framework").reject { |f| f.to_s =~ /Pods.*\.framework/ }
 
   Pod::UI.puts "Built #{frameworks.count} #{'frameworks'.pluralize(frameworks.count)}"
 
