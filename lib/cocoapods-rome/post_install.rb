@@ -32,7 +32,7 @@ def build_for_iosish_platform(sandbox, build_dir, target, device, simulator)
 end
 
 def xcodebuild(sandbox, target, sdk='macosx', deployment_target=nil)
-  args = %W(-project #{sandbox.project_path.basename} -scheme #{target} -configuration #{CONFIGURATION} -sdk #{sdk})
+  args = %W(-project #{sandbox.project_path.realdirpath} -scheme #{target} -configuration #{CONFIGURATION} -sdk #{sdk})
   platform = PLATFORMS[sdk]
   args += Fourflusher::SimControl.new.destination(:oldest, platform, deployment_target) unless platform.nil?
   Pod::Executable.execute_command 'xcodebuild', args, true
@@ -48,16 +48,14 @@ Pod::HooksManager.register('cocoapods-rome', :post_install) do |installer_contex
   Pod::UI.puts 'Building frameworks'
 
   build_dir.rmtree if build_dir.directory?
-  Dir.chdir(sandbox.project_path.dirname) do
-    targets = installer_context.umbrella_targets.select { |t| t.specs.any? }
-    targets.each do |target|
-      case target.platform_name
-      when :ios then build_for_iosish_platform(sandbox, build_dir, target, 'iphoneos', 'iphonesimulator')
-      when :osx then xcodebuild(sandbox, target.cocoapods_target_label)
-      when :tvos then build_for_iosish_platform(sandbox, build_dir, target, 'appletvos', 'appletvsimulator')
-      when :watchos then build_for_iosish_platform(sandbox, build_dir, target, 'watchos', 'watchsimulator')
-      else raise "Unknown platform '#{target.platform_name}'" end
-    end
+  targets = installer_context.umbrella_targets.select { |t| t.specs.any? }
+  targets.each do |target|
+    case target.platform_name
+    when :ios then build_for_iosish_platform(sandbox, build_dir, target, 'iphoneos', 'iphonesimulator')
+    when :osx then xcodebuild(sandbox, target.cocoapods_target_label)
+    when :tvos then build_for_iosish_platform(sandbox, build_dir, target, 'appletvos', 'appletvsimulator')
+    when :watchos then build_for_iosish_platform(sandbox, build_dir, target, 'watchos', 'watchsimulator')
+    else raise "Unknown platform '#{target.platform_name}'" end
   end
 
   raise Pod::Informative, 'The build directory was not found in the expected location.' unless build_dir.directory?
