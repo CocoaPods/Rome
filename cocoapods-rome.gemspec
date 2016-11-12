@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["boris@icculus.org"]
   spec.summary       = %q{Rome makes it easy to build a list of frameworks for consumption outside of
 Xcode}
-  spec.homepage      = "https://github.com/neonichu/Rome"
+  spec.homepage      = "https://github.com/CocoaPods/Rome"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
