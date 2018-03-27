@@ -38,7 +38,11 @@ def xcodebuild(sandbox, target, sdk='macosx', deployment_target=nil)
   Pod::Executable.execute_command 'xcodebuild', args, true
 end
 
-Pod::HooksManager.register('cocoapods-rome', :post_install) do |installer_context|
+Pod::HooksManager.register('cocoapods-rome', :post_install) do |installer_context, user_options|
+  if user_options["pre_compile"]
+    user_options["pre_compile"].call(installer_context)
+  end
+
   sandbox_root = Pathname(installer_context.sandbox_root)
   sandbox = Pod::Sandbox.new(sandbox_root)
 
