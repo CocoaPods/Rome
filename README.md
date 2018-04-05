@@ -18,7 +18,10 @@ Write a simple Podfile like this:
 ```ruby
 platform :osx, '10.10'
 
-plugin 'cocoapods-rome'
+plugin 'cocoapods-rome' {
+  dsym: true,
+  configuration: 'Release'
+}
 
 target 'caesar' do
   pod 'Alamofire'
@@ -37,6 +40,22 @@ and you will end up with dynamic frameworks:
 $ tree Rome/
 Rome/
 └── Alamofire.framework
+$ tree dSYM/
+dSYM/
+├── iphoneos
+│   └── Alamofire.framework.dSYM
+│       └── Contents
+│           ├── Info.plist
+│           └── Resources
+│               └── DWARF
+│                   └── Alamofire
+└── iphonesimulator
+    └── Alamofire.framework.dSYM
+        └── Contents
+            ├── Info.plist
+            └── Resources
+                └── DWARF
+                    └── Alamofire
 ```
 
 ## Hooks
