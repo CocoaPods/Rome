@@ -18,10 +18,7 @@ Write a simple Podfile like this:
 ```ruby
 platform :osx, '10.10'
 
-plugin 'cocoapods-rome' {
-  dsym: true,
-  configuration: 'Release'
-}
+plugin 'cocoapods-rome'
 
 target 'caesar' do
   pod 'Alamofire'
@@ -40,6 +37,26 @@ and you will end up with dynamic frameworks:
 $ tree Rome/
 Rome/
 └── Alamofire.framework
+```
+
+For your production builds, when you want dSYMs created and stored:
+
+```ruby
+platform :osx, '10.10'
+
+plugin 'cocoapods-rome', {
+  dsym: true,
+  configuration: 'Release'
+}
+
+target 'caesar' do
+  pod 'Alamofire'
+end
+```
+
+Resulting in:
+
+```
 $ tree dSYM/
 dSYM/
 ├── iphoneos
@@ -62,7 +79,7 @@ dSYM/
 
 The plugin allows you to provides hooks that will be called during the installation process.
 
-### pre_compile
+### `pre_compile`
 
 This hook allows you to make any last changes to the generated Xcode project before the compilation of frameworks begins.
 
