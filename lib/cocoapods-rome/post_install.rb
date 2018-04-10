@@ -62,7 +62,7 @@ end
 
 Pod::HooksManager.register('cocoapods-rome', :post_install) do |installer_context, user_options|
   enable_dsym = user_options.fetch('dsym', true)
-  configuration = user_options.fetch('configuration', true)
+  configuration = user_options.fetch('configuration', 'Debug')
   if user_options["pre_compile"]
     user_options["pre_compile"].call(installer_context)
   end
