@@ -11,14 +11,44 @@ Xcode, e.g. for a Swift script.
 $ gem install cocoapods-rome
 ```
 
-## Usage
+## Important
 
-Write a simple Podfile like this:
+In the examples below the target 'caesar' could either be an existing target of a project managed by cocapods for which you'd like to run a swift script **or** it could be fictitious, for example if you wish to run this on a standalone Podfile and get the frameworks you need for adding to your xcode project manually.
+
+## Usage 
+
+Write a simple Podfile, like this:
+
+### MacOS
 
 ```ruby
 platform :osx, '10.10'
 
 plugin 'cocoapods-rome'
+
+target 'caesar' do
+  pod 'Alamofire'
+end
+```
+
+### iOS 
+
+```ruby
+platform :ios, '8.0'
+
+plugin 'cocoapods-rome', { :pre_compile => Proc.new { |installer|
+    installer.pods_project.targets.each do |target|
+        target.build_configurations.each do |config|
+            config.build_settings['SWIFT_VERSION'] = '4.0'
+        end
+    end
+
+    installer.pods_project.save
+},
+
+    dsym: false,
+    configuration: 'Release'
+}
 
 target 'caesar' do
   pod 'Alamofire'
@@ -38,6 +68,9 @@ $ tree Rome/
 Rome/
 └── Alamofire.framework
 ```
+
+## Advanced Usage
+
 
 For your production builds, when you want dSYMs created and stored:
 
