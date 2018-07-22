@@ -94,6 +94,7 @@ Pod::HooksManager.register('cocoapods-rome', :post_install) do |installer_contex
   # can get upset about Info.plist containing references to the simulator SDK
   frameworks = Pathname.glob("build/*/*/*.framework").reject { |f| f.to_s =~ /Pods.*\.framework/ }
   frameworks += Pathname.glob("build/*.framework").reject { |f| f.to_s =~ /Pods.*\.framework/ }
+  resources = []
   Pod::UI.puts "Built #{frameworks.count} #{'frameworks'.pluralize(frameworks.count)}"
 
   destination.rmtree if destination.directory?
@@ -104,16 +105,18 @@ Pod::HooksManager.register('cocoapods-rome', :post_install) do |installer_contex
       file_accessor = Pod::Sandbox::FileAccessor.new(sandbox.pod_dir(spec.root.name), consumer)
       frameworks += file_accessor.vendored_libraries
       frameworks += file_accessor.vendored_frameworks
+      resources += file_accessor.resources
     end
   end
   frameworks.uniq!
+  resources.uniq!
 
   Pod::UI.puts "Copying #{frameworks.count} #{'frameworks'.pluralize(frameworks.count)} " \
     "to `#{destination.relative_path_from Pathname.pwd}`"
 
-  frameworks.each do |framework|
-    FileUtils.mkdir_p destination
-    FileUtils.cp_r framework, destination, :remove_destination => true
+  FileUtils.mkdir_p destination
+  (frameworks + resources).each do |file|
+    FileUtils.cp_r file, destination, :remove_destination => true
   end
 
   copy_dsym_files(sandbox_root.parent + 'dSYM', configuration) if enable_dsym
