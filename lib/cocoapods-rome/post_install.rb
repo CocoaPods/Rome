@@ -92,9 +92,11 @@ Pod::HooksManager.register('cocoapods-rome', :post_install) do |installer_contex
 
   # Make sure the device target overwrites anything in the simulator build, otherwise iTunesConnect
   # can get upset about Info.plist containing references to the simulator SDK
-  frameworks = Pathname.glob("build/*/*/*.framework").reject { |f| f.to_s =~ /Pods.*\.framework/ }
-  frameworks += Pathname.glob("build/*.framework").reject { |f| f.to_s =~ /Pods.*\.framework/ }
+  frameworks = Pathname.glob("build/*/*/*.framework").reject { |f| f.to_s =~ /Pods[^.]+\.framework/ }
+  frameworks += Pathname.glob("build/*.framework").reject { |f| f.to_s =~ /Pods[^.]+\.framework/ }
+
   resources = []
+
   Pod::UI.puts "Built #{frameworks.count} #{'frameworks'.pluralize(frameworks.count)}"
 
   destination.rmtree if destination.directory?
