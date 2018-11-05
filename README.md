@@ -118,6 +118,12 @@ This hook allows you to make any last changes to the generated Xcode project bef
 
 It receives the `Pod::Installer` as its only argument.
 
+### `post_compile`
+
+This hook allows you to run code after the compilation of the frameworks finished and they have been moved to the `Rome` folder.
+
+It receives the `Pod::Installer` as its only argument.
+
 #### Example
 
 Customising the Swift version of all pods
@@ -125,15 +131,19 @@ Customising the Swift version of all pods
 ```ruby
 platform :osx, '10.10'
 
-plugin 'cocoapods-rome', :pre_compile => Proc.new { |installer|
-    installer.pods_project.targets.each do |target|
-        target.build_configurations.each do |config|
-            config.build_settings['SWIFT_VERSION'] = '4.0'
+plugin 'cocoapods-rome', 
+    :pre_compile => Proc.new { |installer|
+        installer.pods_project.targets.each do |target|
+            target.build_configurations.each do |config|
+                config.build_settings['SWIFT_VERSION'] = '4.0'
+            end
         end
-    end
 
-    installer.pods_project.save
-}
+        installer.pods_project.save
+    },
+    :post_compile => Proc.new { |installer|
+        puts "Rome finished building all the frameworks"
+    }
 
 target 'caesar' do
     pod 'Alamofire'
