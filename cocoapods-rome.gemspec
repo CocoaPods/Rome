@@ -21,6 +21,6 @@ Xcode}
   spec.add_dependency "cocoapods", ">= 1.1.0", "< 2.0"
   spec.add_dependency "fourflusher", "~> 2.2"
 
-  spec.add_development_dependency "bundler", "~> 1.3"
+  spec.add_development_dependency "bundler", "~> 2.0"
   spec.add_development_dependency "rake"
 end
