@@ -69,7 +69,7 @@ GEM
     nanaimo (0.2.6)
     nap (1.1.0)
     netrc (0.11.0)
-    rake (11.2.2)
+    rake (13.0.1)
     ruby-macho (1.4.0)
     thread_safe (0.3.6)
     tzinfo (1.2.5)
@@ -91,4 +91,4 @@ DEPENDENCIES
   rake
 
 BUNDLED WITH
-   1.16.3
+   1.17.2
