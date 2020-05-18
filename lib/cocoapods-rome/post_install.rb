@@ -96,6 +96,7 @@ Pod::HooksManager.register('cocoapods-rome', :post_install) do |installer_contex
   frameworks += Pathname.glob("build/*.framework").reject { |f| f.to_s =~ /Pods[^.]+\.framework/ }
 
   resources = []
+  resources = Pathname.glob("build/#{configuration}-iphoneos/**/*.bundle")
 
   Pod::UI.puts "Built #{frameworks.count} #{'frameworks'.pluralize(frameworks.count)}"
 
