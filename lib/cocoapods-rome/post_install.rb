@@ -9,7 +9,7 @@ def build_for_iosish_platform(sandbox, build_dir, target, device, simulator, con
   target_label = target.cocoapods_target_label
 
   xcodebuild(sandbox, target_label, device, deployment_target, configuration)
-  xcodebuild(sandbox, target_label, simulator, deployment_target, configuration)
+  xcodebuild(sandbox, target_label, simulator, deployment_target, configuration, 'ARCHS=x86_64')
 
   spec_names = target.specs.map { |spec| [spec.root.name, spec.root.module_name] }.uniq
   spec_names.each do |root_name, module_name|
@@ -30,8 +30,11 @@ def build_for_iosish_platform(sandbox, build_dir, target, device, simulator, con
   end
 end
 
-def xcodebuild(sandbox, target, sdk='macosx', deployment_target=nil, configuration)
+def xcodebuild(sandbox, target, sdk='macosx', deployment_target=nil, configuration='Debug', build_settings=nil)
   args = %W(-project #{sandbox.project_path.realdirpath} -scheme #{target} -configuration #{configuration} -sdk #{sdk})
+  if build_settings 
+    args.append(build_settings)
+  end
   platform = PLATFORMS[sdk]
   args += Fourflusher::SimControl.new.destination(:oldest, platform, deployment_target) unless platform.nil?
   Pod::Executable.execute_command 'xcodebuild', args, true
