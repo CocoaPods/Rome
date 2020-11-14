@@ -128,10 +128,10 @@ end
 ```
 ### Build flags
 
-If you would like to pass custom flags to be passed to xcodebuild, pass `flags` key with an array of flags to be included.
+If you would like to pass custom flags to xcodebuild, set `flags` key with an array of flags to be included.
 
 #### Example
-An example to build a Swift ABI compatible XCFramework.
+An example to build an XCFramework with Swift's ABI compatibility.
 
 ```ruby
 platform :osx, '10.10'
