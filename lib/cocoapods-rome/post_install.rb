@@ -64,7 +64,7 @@ def build_universal_framework(device_lib, simulator_lib, build_dir, destination,
 end
 
 def build_xcframework(device_lib, simulator_lib, destination, module_name)
-  args = %W(-create-xcframework -output #{destination}/${module_name}.xcframework -framework #{device_lib} -framework #{simulator_lib})
+  args = %W(-create-xcframework -output #{destination}/#{module_name}.xcframework -framework #{device_lib} -framework #{simulator_lib})
   Pod::Executable.execute_command 'xcodebuild', args, true
 end
 
@@ -132,11 +132,12 @@ Pod::HooksManager.register('cocoapods-rome', :post_install) do |installer_contex
   raise Pod::Informative, 'The build directory was not found in the expected location.' unless build_dir.directory?
 
   build_type = build_xcframework ? "xcframework" : "framework"
-  frameworks = Pathname.glob("build/*.#{build_type}").reject { |f| f.to_s =~ /Pods[^.]+\.#{build_type}/ }
+  frameworks = Pathname.glob("build/*/*/*.#{build_type}").reject { |f| f.to_s =~ /Pods[^.]+\.#{build_type}/ }
+  frameworks += Pathname.glob("build/*.#{build_type}").reject { |f| f.to_s =~ /Pods[^.]+\.#{build_type}/ }
 
   resources = []
 
-  Pod::UI.puts "Built #{frameworks.count} #{"frameworks".pluralize(frameworks.count)}"
+  Pod::UI.puts "Built #{frameworks.count} #{'frameworks'.pluralize(frameworks.count)}"
 
   destination.rmtree if destination.directory?
 
@@ -153,7 +154,7 @@ Pod::HooksManager.register('cocoapods-rome', :post_install) do |installer_contex
   frameworks.uniq!
   resources.uniq!
 
-  Pod::UI.puts "Copying #{frameworks.count} #{"frameworks".pluralize(frameworks.count)} " \
+  Pod::UI.puts "Copying #{frameworks.count} #{'frameworks'.pluralize(frameworks.count)} " \
     "to `#{destination.relative_path_from Pathname.pwd}`"
 
   FileUtils.mkdir_p destination
