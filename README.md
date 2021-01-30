@@ -108,6 +108,47 @@ dSYM/
                     └── Alamofire
 ```
 
+### XCFrameworks
+
+The plugin builds Universal FAT framework by default. If you would instead prefer to build XCFramework, set `xcframework` to `true` in user options.
+
+```ruby
+platform :osx, '10.10'
+
+plugin 'cocoapods-rome', {
+  dsym: true,
+  configuration: 'Release',
+  xcframework: true
+}
+
+target 'caesar' do
+  pod 'Alamofire'
+end
+
+```
+### Build flags
+
+If you would like to pass custom flags to xcodebuild, set `flags` key with an array of flags to be included.
+
+#### Example
+An example to build an XCFramework with Swift's ABI compatibility.
+
+```ruby
+platform :osx, '10.10'
+
+plugin 'cocoapods-rome', {
+  dsym: true,
+  configuration: 'Release',
+  xcframework: true,
+  flags: ['BUILD_LIBRARY_FOR_DISTRIBUTION=YES']
+}
+
+target 'caesar' do
+  pod 'Alamofire'
+end
+
+```
+
 ## Hooks
 
 The plugin allows you to provides hooks that will be called during the installation process.
