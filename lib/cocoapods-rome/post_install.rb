@@ -63,10 +63,14 @@ def build_universal_framework(device_lib, simulator_lib, build_dir, destination,
   FileUtils.mv device_framework_lib, build_dir, :force => true
 end
 
-def build_xcframework(frameworks, destination, module_name)
-  args = %W(-create-xcframework -output #{destination}/#{module_name}.xcframework)
+def build_xcframework(frameworks, build_dir, module_name)
+  output = "#{build_dir}/#{module_name}.xcframework"
+  return if File.exist?(output) 
+
+  args = %W(-create-xcframework -output #{output})
 
   frameworks.each do |framework|
+    return unless File.exist?(framework) 
     args += %W(-framework #{framework})
   end
 
@@ -115,7 +119,7 @@ Pod::HooksManager.register('cocoapods-rome', :post_install) do |installer_contex
   end
 
   sandbox_root = Pathname(installer_context.sandbox_root)
-  sandbox = Pod::Sandbox.new(sandbox_root)
+  sandbox = installer_context.sandbox
 
   enable_debug_information(sandbox.project_path, configuration) if enable_dsym
 
