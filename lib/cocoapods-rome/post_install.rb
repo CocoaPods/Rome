@@ -8,8 +8,8 @@ def build_for_iosish_platform(sandbox, build_dir, target, device, simulator, con
   deployment_target = target.platform_deployment_target
   target_label = target.cocoapods_target_label
 
-  xcodebuild(sandbox, target_label, device, deployment_target, configuration)
-  xcodebuild(sandbox, target_label, simulator, deployment_target, configuration)
+  xcodebuild(sandbox, build_dir, target_label, device, deployment_target, configuration)
+  xcodebuild(sandbox, build_dir, target_label, simulator, deployment_target, configuration)
 
   spec_names = target.specs.map { |spec| [spec.root.name, spec.root.module_name] }.uniq
   spec_names.each do |root_name, module_name|
@@ -30,8 +30,8 @@ def build_for_iosish_platform(sandbox, build_dir, target, device, simulator, con
   end
 end
 
-def xcodebuild(sandbox, target, sdk='macosx', deployment_target=nil, configuration)
-  args = %W(-project #{sandbox.project_path.realdirpath} -scheme #{target} -configuration #{configuration} -sdk #{sdk})
+def xcodebuild(sandbox, build_dir, target, sdk='macosx', deployment_target=nil, configuration)
+  args = %W(-derivedDataPath #{build_dir} -project #{sandbox.project_path.realdirpath} -scheme #{target} -configuration #{configuration} -sdk #{sdk})
   platform = PLATFORMS[sdk]
   args += Fourflusher::SimControl.new.destination(:oldest, platform, deployment_target) unless platform.nil?
   Pod::Executable.execute_command 'xcodebuild', args, true
@@ -68,7 +68,7 @@ Pod::HooksManager.register('cocoapods-rome', :post_install) do |installer_contex
   end
 
   sandbox_root = Pathname(installer_context.sandbox_root)
-  sandbox = Pod::Sandbox.new(sandbox_root)
+  sandbox = installer_context.sandbox
 
   enable_debug_information(sandbox.project_path, configuration) if enable_dsym
 
@@ -82,7 +82,7 @@ Pod::HooksManager.register('cocoapods-rome', :post_install) do |installer_contex
   targets.each do |target|
     case target.platform_name
     when :ios then build_for_iosish_platform(sandbox, build_dir, target, 'iphoneos', 'iphonesimulator', configuration)
-    when :osx then xcodebuild(sandbox, target.cocoapods_target_label, configuration)
+    when :osx then xcodebuild(sandbox, build_dir, target.cocoapods_target_label, configuration)
     when :tvos then build_for_iosish_platform(sandbox, build_dir, target, 'appletvos', 'appletvsimulator', configuration)
     when :watchos then build_for_iosish_platform(sandbox, build_dir, target, 'watchos', 'watchsimulator', configuration)
     else raise "Unknown platform '#{target.platform_name}'" end
