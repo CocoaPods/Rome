@@ -13,7 +13,7 @@ $ gem install cocoapods-rome
 
 ## Important
 
-In the examples below the target 'caesar' could either be an existing target of a project managed by cocapods for which you'd like to run a swift script **or** it could be fictitious, for example if you wish to run this on a standalone Podfile and get the frameworks you need for adding to your xcode project manually.
+In the examples below the target 'caesar' could either be an existing target of a project managed by CocoaPods for which you'd like to run a swift script **or** it could be fictitious, for example if you wish to run this on a standalone Podfile and get the frameworks you need for adding to your xcode project manually.
 
 ## Usage 
 
